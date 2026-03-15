@@ -1,17 +1,29 @@
+import { Link } from "react-router"
+
 // Komponent som viser en liste med filmer
 function MovieList({ movies }) {
   return (
     <section>
       {movies.map((movie) => (
         <article key={movie.imdbID}>
-          <h2>{movie.Title}</h2>
-          <p>{movie.Year}</p>
+          <header>
+            <h2>
+              <Link to={`/${encodeURIComponent(movie.Title)}`}>
+                {movie.Title}
+              </Link>
+            </h2>
+            <p>{movie.Year}</p>
+          </header>
 
-          <img
-            src={movie.Poster !== "N/A" ? movie.Poster : ""}
-            alt={movie.Title}
-            width="150"
-          />
+          {movie.Poster !== "N/A" ? (
+            <img
+              src={movie.Poster}
+              alt={`Poster for ${movie.Title}`}
+              width="150"
+            />
+          ) : (
+            <p>Ingen plakat tilgjengelig</p>
+          )}
         </article>
       ))}
     </section>

@@ -6,7 +6,7 @@ function MoviePage() {
   return (
     <main>
       <header>
-        <h1>{movie}</h1>
+        <h1>{decodeURIComponent(movie)}</h1>
       </header>
     </main>
   )
