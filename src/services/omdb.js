@@ -1,7 +1,12 @@
+// API-nøkkel hentes fra .env-filen via Vite
 const API_KEY = import.meta.env.VITE_OMDB_API_KEY
+
+// Base URL for OMDb API
 const BASE_URL = "https://www.omdbapi.com/"
 
-// Henter standardfilmer til forsiden (ekte James Bond-filmer)
+
+// Henter standardfilmer til forsiden.
+// Her brukes ekte James Bond-filmer slik at siden viser minst 10 filmer før brukeren søker.
 export async function getDefaultMovies() {
 
   const bondTitles = [
@@ -17,6 +22,7 @@ export async function getDefaultMovies() {
     "The Spy Who Loved Me"
   ]
 
+  // Lager et API-kall for hver filmtittel
   const moviePromises = bondTitles.map(async (title) => {
 
     const response = await fetch(
@@ -25,6 +31,7 @@ export async function getDefaultMovies() {
 
     const data = await response.json()
 
+    // Hvis API-et ikke finner filmen returneres null
     if (data.Response === "False") {
       return null
     }
@@ -32,13 +39,16 @@ export async function getDefaultMovies() {
     return data
   })
 
+  // Promise.all gjør at alle API-kallene kjøres parallelt
   const movies = await Promise.all(moviePromises)
 
+  // Fjerner eventuelle null-verdier fra listen
   return movies.filter(Boolean)
 }
 
 
-// Søker etter filmer basert på tittel
+// Søker etter filmer basert på tittel.
+// Brukes når brukeren skriver minst 3 tegn i søkefeltet.
 export async function searchMovies(searchTerm) {
 
   const response = await fetch(
@@ -47,6 +57,7 @@ export async function searchMovies(searchTerm) {
 
   const data = await response.json()
 
+  // Hvis ingen filmer blir funnet returneres en tom liste
   if (data.Response === "False") {
     return []
   }
