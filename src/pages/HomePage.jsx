@@ -1,22 +1,40 @@
 import { useEffect, useState } from "react"
-import { getDefaultMovies } from "../services/omdb"
+import { getDefaultMovies, searchMovies } from "../services/omdb"
 import MovieList from "../components/MovieList"
+import SearchForm from "../components/SearchForm"
 
-// Forsiden til appen som viser en liste med 10 james bond filmer
+// Forsiden til applikasjonen
 function HomePage() {
-
-  // state som lagrer filmer
+  // State som lagrer filmene som skal vises
   const [movies, setMovies] = useState([])
 
-  // henter James Bond filmer når siden åpnes  
+  // State som lagrer det brukeren skriver i søkefeltet
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // Henter standardfilmer når siden lastes første gang
   useEffect(() => {
-    async function loadMovies() {
+    async function loadDefaultMovies() {
       const data = await getDefaultMovies()
       setMovies(data)
     }
 
-    loadMovies()
+    loadDefaultMovies()
   }, [])
+
+  // Kjører søk når brukeren skriver minst 3 tegn
+  useEffect(() => {
+    async function loadMovies() {
+      if (searchTerm.trim().length >= 3) {
+        const results = await searchMovies(searchTerm)
+        setMovies(results)
+      } else {
+        const defaultMovies = await getDefaultMovies()
+        setMovies(defaultMovies)
+      }
+    }
+
+    loadMovies()
+  }, [searchTerm])
 
   return (
     <main>
@@ -25,8 +43,16 @@ function HomePage() {
         <p>Finn filmer med OMDb API</p>
       </header>
 
-      <MovieList movies={movies} />
+      <SearchForm
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
+      {searchTerm.trim().length > 0 && searchTerm.trim().length < 3 && (
+        <p>Skriv minst 3 tegn for å søke.</p>
+      )}
+
+      <MovieList movies={movies} />
     </main>
   )
 }
